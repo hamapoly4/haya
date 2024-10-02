@@ -9,7 +9,7 @@
 
 using namespace ev3api;
 
-const int LineTracer::PWM = 70; // 静的const付きメンバ定数の定義
+const int LineTracer::PWM = 40; // 静的const付きメンバ定数の定義
 
 LineTracer::LineTracer(Motor& leftwheel, Motor& rightwheel)
     : mLeftWheel(leftwheel), mRightWheel(rightwheel)
