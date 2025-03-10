@@ -2,12 +2,14 @@ import cv2
 import numpy as np
 import statistics
 from picamera import PiCamera
+import subprocess
 
 
 cap = cv2.VideoCapture(0)
 
 
-
+global hasamaru
+    
 
 
 while(1):
@@ -22,10 +24,10 @@ while(1):
     g = np.array([79,80,200])
     b = np.array([10,100,150])
     
-    if np.all((r >= 115) & (r <= 255)):
-        if np.all((g >= 65) & (r <= 255)):
-            if np.all((b >= 0) & (r <= 255)):
-                print('BULE')
+    if np.all((r >= 0) & (r <= 20)):
+        if np.all((g >= 120) & (r <= 160)):
+            if np.all((b >= 160) & (r <= 255)):
+                print('BLUE')
  
     print("Center pixel RGB values:", frame[240, 320])
     
@@ -40,10 +42,10 @@ while(1):
     
 
     cv2.imshow('frame',frame)
-    
-    k = cv2.waitKey(100) & 0xFF
-    
-    if k == 27:
+
+
+
+    if cv2.waitKey(1) & 0xFF == ord('q'):
         break
         
 cv2.destroyALLWindows()
