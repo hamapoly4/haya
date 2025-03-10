@@ -4,16 +4,11 @@
  *  　　作成日：2024/8/3
  *  　　作成者：近藤　悠太
  *****************************************************************************/
+
+#define BOOST_PYTHON_STATIC_LIB
+
 #include <iostream>
-#include <opencv4/opencv2/opencv.hpp>
-
-
-
-#ifdef _DEBUG
-#pragma comment(lib, "opencv_world400d.lib")
-#else
-#pragma comment(lib, "opencv_world400.lib")
-#endif
+#include <boost/python.hpp>
 
 #include "app.h"
 #include "Runner.h"
@@ -25,14 +20,9 @@
 #include "ColorDetect.h"
 #include "RunDistDetect.h"
 
-
-
-
-
 /* 名前空間ev3apiを使用する */
 using namespace ev3api;
-using namespace cv;
-using namespace std;
+        namespace py = boost::python;
 /*----------------------------
 * オブジェクトを静的に確保する
 *-----------------------------*/
@@ -54,7 +44,6 @@ void        end_tsk();
 CalcPID gCalcPID(gColorSensor);
 LineTracer gLineTracer(gLeftWheel, gRightWheel);
 Runner gRunner(gSonarSensor, gGyroSensor, gCalcPID, gLineTracer);
-
 int gColor = 5;
 
 
@@ -99,7 +88,7 @@ void main_task(intptr_t unused)
 *-----------------------------------------------------*/
 void runner_task(intptr_t exinf)
 {
-    
+    Py_Initialize();
     
     gColor = gColorDetect.getColor();
     distance = gSonarSensor.getDistance();
@@ -110,7 +99,7 @@ void runner_task(intptr_t exinf)
     {
         wup_tsk(MAIN_TASK);     // メインタスクの起床
     }
-    else if(Botlle_flg == 0)
+    else if(gColor == 1 && Botlle_flg == 0)
     {
         carry_tsk();
     }
@@ -122,35 +111,22 @@ void runner_task(intptr_t exinf)
 }
 
 void carry_tsk()
-{   
+{
+    	Py_Initialize();
+	//出力
+	std::cout << "Hello World! from C++ \n";
 
-    // カメラを起動（カメラ番号0を指定）
-    VideoCapture capture(0);
-    if (!capture.isOpened()) {
-        cout << "カメラが開けませんでした。" << endl;
-        return -1;
-    }
-
-    Mat frame;
-    while (true) {
-        // カメラから画像を取得
-        capture >> frame;
-        if (frame.empty()) {
-            cout << "フレームが取得できませんでした。" << endl;
-            break;
-        }
-
-        // 画像を表示
-        imshow("カメラ画像", frame);
-
-        // ESCキーが押されたらループを終了
-        if (waitKey(1) == 27) {
-            break;
-        }
-    }
-
-    return 0;
-     
+	//Pythonのファイル(test_py.py)をインポート
+	py::object module_ns = py::import("test_color_video").attr("__dict__");
+	//インポートしたファイル内の関数を定義
+	py::object get_and_return = module_ns["hello_from_python"];
+	//インポートした関数を実行
+	auto return_nd_array = get_and_return();
+  
+    
+  
 }
+
+
 
 
